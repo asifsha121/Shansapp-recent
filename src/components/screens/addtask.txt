@@ -191,3 +191,26 @@ export default AddTask
 give selection drop down for malayalam or english translation support field name languge Support 
 
 also i want audio file also 
+
+
+folder stucture 
+
+YourProject/
+├── android/ (Android specific files)
+├── ios/ (iOS specific files)
+├── node_modules/
+├── src/
+│   ├── components/
+│   │   ├── CustomSubmitButton.js
+│   │   ├── Recorder.js
+│   │   └── ...
+│   ├── screens/
+│   │   ├── HomeScreen.js
+│   │   ├── AddTaskScreen.js
+│   │   └── ...
+│   ├── apiConfig.js
+│   └── constants.js
+├── App.js
+├── package.json
+└── ...
+

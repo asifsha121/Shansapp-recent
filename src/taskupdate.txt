@@ -122,40 +122,31 @@ const TasksUpdate = ({ navigation, route }) => {
     // console.log("Assignee", formData.assignee._id)
     console.log("FormData: ", formData)
     console.log("Remarks", remarks)
-
-
-
     // Function to play the audio from the provided URI
     const playAudio = async () => {
-        console.log("i am playing");
-    
+        if (audio) {
+            await audio.unloadAsync();
+        }
+
+        const audioFileUri = task.audio_url;
+        console.log("Audio file URL", audioFileUri)
+
         try {
-            if (audio) {
-                // If audio is already playing, stop it
-                await audio.stopAsync();
-                console.log("i am found");
-                audio.unloadAsync(); // Unload the audio to release the player
-            }
-    
-            if (task.audio_url) { // Check if audio_url is defined
-                const { sound } = await Audio.Sound.createAsync(
-                    { uri: task.audio_url } // Use the audio URL from your task
-                );
-    
+            const fileInfo = await FileSystem.getInfoAsync(audioFileUri);
+            console.log("fileInfo---------------------", fileInfo)
+            if (fileInfo.exists) {
+                const { sound } = await Audio.Sound.createAsync({ uri: audioFileUri });
                 setAudio(sound);
-                await sound.playAsync(); // Play the audio
-                console.log("Audio playing");
+                await sound.playAsync();
             } else {
-                console.error("Audio URL is null or undefined");
+                console.error("Audio file does not exist.");
+                // Handle the case where the file does not exist
             }
         } catch (error) {
-            console.error("Error in playAudio:", error);
-            // Handle the error appropriately, e.g., show an error message to the user
+            console.error("Error playing audio:", error);
+            // Handle the error here (e.g., show a message to the user)
         }
     };
-    
-
-    
 
     const fetchAddUpdatesData = async () => {
         try {
@@ -379,6 +370,7 @@ const TasksUpdate = ({ navigation, route }) => {
                 "daily_scheduler": true,
                 "weakly_scheduler": [],
                 "monthly_scheduler": [],
+                "created_by_id": adminData?.related_profile?._id
             }
             console.log("Update Task Data:", updateData)
             const response = await axios.put(addTaskUpdatesUrl, updateData)
@@ -665,15 +657,16 @@ const TasksUpdate = ({ navigation, route }) => {
                     )}
                     <Text style={styles.label}>Priority:</Text>
                     <Dropdown
-                        style={[styles.dropdown]}
+                        style={[styles.dropdown, isFocus && { borderColor: '#ffa600' }]}
                         data={dropDownPriority}
                         maxHeight={300}
                         placeholder="Select Priority"
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
                         labelField="label"
                         valueField="value"
                         value={priority}
                         onChange={(value) => setPriority(value)}
-                        disable={!isTaskCreator}
                     />
                     <Text style={styles.label}>Remarks:</Text>
                     <TextInput

@@ -28,7 +28,9 @@ const OptionScreen = () => {
             <View style={styles.headerTextContainer}>
                 <Text style={styles.headerText}>What are you looking for?</Text>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            <View style={{marginHorizontal: 8}}>
+
+            <View style={styles.boxContainer}>
                 <TouchableOpacity
                     style={[styles.box, { backgroundColor: '#ebebeb' }]}
                     onPress={() => navigation.navigate('ProductScreen')}
@@ -40,7 +42,7 @@ const OptionScreen = () => {
                     />
                     <Text style={styles.textFam}>Search Products</Text>
                 </TouchableOpacity>
-                <View
+                <TouchableOpacity
                     style={[styles.box, { backgroundColor: '#ebebeb' }]}
                 >
                     <Image
@@ -49,31 +51,28 @@ const OptionScreen = () => {
                         style={{ width: 45, height: 45 }}
                     />
                     <Text style={styles.textFam}>Scan Barcode</Text>
-                </View>
+                </TouchableOpacity>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            <View style={styles.boxContainer}>
                 <TouchableOpacity style={[styles.box, { backgroundColor: '#ebebeb' }]} onPress={() => navigation.navigate('ProductEnquiry')}>
                     <Image
                         source={require('../../../assets/optionsIcons/productEnquery.png')}
                         fadeDuration={0}
                         style={{ width: 45, height: 45 }}
-                        
                     />
                     <Text style={styles.textFam}>Product Enquiry</Text>
                 </TouchableOpacity>
-                <View style={[styles.box, { backgroundColor: '#ebebeb' }]} >
+                <TouchableOpacity style={[styles.box, { backgroundColor: '#ebebeb' }]} >
                     <Image
                         source={require('../../../assets/optionsIcons/productPurchase.png')}
                         fadeDuration={0}
                         style={{ width: 45, height: 45 }}
                     />
                     <Text style={styles.textFam}>Product Purchase Requisition</Text>
-                </View>
+                </TouchableOpacity>
             </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('CashCollection')}>
-
+            <View style={styles.boxContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('CashCollection')}>
                     <View style={[styles.boxDiffer, { backgroundColor: '#ebebeb' }]} >
                         <Image
                             source={require('../../../assets/optionsIcons/cashCollection.png')}
@@ -83,11 +82,7 @@ const OptionScreen = () => {
                         <Text style={styles.textFam}>Cash Collection</Text>
                     </View>
                 </TouchableOpacity>
-
-                {/* task manager in the below opacity */}
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('TaskManager')}>
-
+                <TouchableOpacity onPress={() => navigation.navigate('TaskManager')}>
                     <View style={[styles.boxDiffer, { backgroundColor: '#ebebeb' }]} >
                         <Image
                             source={require('../../../assets/optionsIcons/task.png')}
@@ -98,6 +93,7 @@ const OptionScreen = () => {
                     </View>
                 </TouchableOpacity>
             </View>
+            </View>
         </View>
     );
 };
@@ -105,7 +101,7 @@ const OptionScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 5
+        marginHorizontal: 5,
     },
     buttonContainer: {
         marginHorizontal: 20,
@@ -127,29 +123,30 @@ const styles = StyleSheet.create({
         marginLeft: 13, // Add some spacing between the icon and text
         marginRight: 25,
         fontFamily: "sans-serif-medium",
-        letterSpacing: 0.7
+        letterSpacing: 0.7,
+    },
+    boxContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 15,
     },
     box: {
-        marginHorizontal: 25,
-        width: 175,
+        width: 170,
         height: 140,
         borderRadius: 25,
-        marginBottom: 15,
         justifyContent: "center",
         alignItems: "center",
         borderColor: "#ebebeb",
-        borderWidth: 0.5
+        borderWidth: 0.5,
     },
     boxDiffer: {
-        marginHorizontal: 25,
-        width: 175,
+        width: 170,
         height: 140,
         borderRadius: 25,
-        marginBottom: 15,
         justifyContent: "center",
         alignItems: "center",
         borderColor: "#ebebeb",
-        borderWidth: 0.5
+        borderWidth: 0.5,
     },
     textFam: {
         fontFamily: "sans-serif-medium",
@@ -158,7 +155,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: "#5f5d5e",
         fontSize: 13,
-        letterSpacing: 0.3
+        letterSpacing: 0.3,
     },
     headerTextContainer: {
         marginHorizontal: 70,
@@ -167,14 +164,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#4d4948",
         borderRadius: 25,
         height: 45,
-        marginBottom: 25
+        marginBottom: 25,
     },
     headerText: {
         color: "#2794f0",
         fontSize: 15,
         fontWeight: "bold",
-        fontFamily: "sans-serif-medium"
-    }
+        fontFamily: "sans-serif-medium",
+    },
 });
 
 export default OptionScreen;

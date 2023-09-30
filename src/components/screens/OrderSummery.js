@@ -11,7 +11,7 @@ export default function OrderSummery({ product, index, updateTotalPrice, removeP
 
     const route=useRoute();
 
-    const [currency, setCurrency] = useState("QAR")
+    const [currency, setCurrency] = useState("AED")
     const [price, setPrice] = useState(product.productCost || 0);
 
     const [quantity, setQuantity] = useState(1);

@@ -105,7 +105,7 @@ const AddTask = () => {
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
-
+  
         const recordingOptions = {
           android: {
             extension: '.mp3',
@@ -127,7 +127,7 @@ const AddTask = () => {
             linearPCMIsFloat: false,
           },
         };
-
+  
         const { recording } = await Audio.Recording.createAsync(recordingOptions);
         setRecording(recording);
       }
@@ -135,7 +135,7 @@ const AddTask = () => {
       console.log(error);
     }
   };
-
+  
 
   const stopRecording = async () => {
     if (recording) {
@@ -270,101 +270,101 @@ const AddTask = () => {
 
 
   // Handle submiting
-  const handleSubmit = async () => {
-    const isFormValid = validateForm();
-    if (!isFormValid) {
-      return;
+const handleSubmit = async () => {
+  const isFormValid = validateForm();
+  if (!isFormValid) {
+    return;
+  }
+  try {
+    console.log("Loading......");
+    const addTaskData = {
+      "title": formData.taskTitle,
+      "description": taskDetails,
+      "status": "new",
+      "due_date": selectedDate,
+      "estimated_time": selectedTime,
+      "priority": formData?.priority?.value || null,
+      "assignee_id": formData?.assignee?.id || null,
+      "created_by_id": adminData?.related_profile?._id,
+      "warehouse_id": adminData?.warehouse_id || null,
+      "is_scheduled": true,
+      "daily_scheduler": true,
+      "document": [],
+      "participants": [],
+      "watchers": [],
+      "assignee": [
+        formData?.assignee?.id || null,
+      ]
+    };
+
+    // Check if there are any recorded audio files
+    if (recordings.length > 0) {
+      // Assume you want to use the URL of the first recorded audio file
+      const audioUrl = recordings[0].file;
+      console.log("audioUrl: -------", audioUrl)
+
+      const formData = new FormData();
+      formData.append('audio', {
+        uri: audioUrl,
+        type: 'audio/mp3', 
+        name: audioUrl.split('/').pop(), 
+      });
+
+      // Make a POST request to the upload URL
+      try {
+        const response = await axios.post(audioUploadUrl, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data', // Set the content type for form data
+          },
+        });
+
+        // Handle the server response here
+        console.log(response.data);
+
+        // If the server returns a successful response, you can use the audio URL as needed
+        const uploadedAudioUrl = response.data.audioUrl;
+        console.log("uploadedAudioUrl: " + uploadedAudioUrl);
+
+        // Add the audio URL to the task data
+        addTaskData.audio_url = uploadedAudioUrl;
+      } catch (error) {
+        console.error('Error uploading audio:', error);
+        // Handle the error here
+      }
+    } else {
+      // If no audio recordings are available, you can set it to null or handle it as needed
+      addTaskData.audio_url = null; // or an appropriate default value
     }
-    try {
-      console.log("Loading......");
-      const addTaskData = {
-        "title": formData.taskTitle,
-        "description": taskDetails,
-        "status": "New",
-        "due_date": selectedDate,
-        "estimated_time": selectedTime,
-        "priority": formData?.priority?.value || null,
-        "assignee_id": formData?.assignee?.id || null,
-        "created_by_id": adminData?.related_profile?._id,
-        "warehouse_id": adminData?.warehouse_id || null,
-        "is_scheduled": true,
-        "daily_scheduler": true,
-        "document": [],
-        "participants": [],
-        "watchers": [],
-        "audio_url": null,
-        "assignee": [
-          formData?.assignee?.id || null,
-        ]
-      };
 
-      // Check if there are any recorded audio files
-      if (recordings.length > 0) {
-        // Assume you want to use the URL of the first recorded audio file
-        const audioUrl = recordings[0].file;
-        console.log("audioUrl: -------", audioUrl)
-
-        const formData = new FormData();
-        formData.append('file', {
-          uri: audioUrl,
-          type: 'audio/mp3',
-          name: audioUrl.split('/').pop(),
-        });
-
-        // Make a POST request to the upload URL
-        try {
-          const response = await axios.post(audioUploadUrl, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data', // Set the content type for form data
-            },
-          });
-
-          console.log('Server Response:', response.data.data);
-
-          const uploadedUrl = await response.data.data
-
-          addTaskData.audio_url = await uploadedUrl
-        } catch (error) {
-          console.error('Error uploading audio:', error);
-          // Handle the error here
-        }
-      } else {
-        // If no audio recordings are available, you can set it to null or handle it as needed
-        addTaskData.audio_url = null; // or an appropriate default value
-      }
-
-      const response = await axios.post(addTaskUrl, addTaskData);
-      console.log(response.data);
-      if (response.data.success === 'true') {
-        // Task created successfully, show a success message
-        Toast.show({
-          type: 'invoiceSuccessToast',
-          text1: 'Success',
-          text2: 'Task Created Successfully',
-          position: 'bottom',
-        });
-        navigation.navigate('TaskManager');
-      } else {
-        // Task creation failed, show an error message
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to create task',
-          position: 'bottom',
-        });
-        console.log(response);
-      }
-    } catch (error) {
-      console.log(error);
+    const response = await axios.post(addTaskUrl, addTaskData);
+    console.log(response.data);
+    if (response.data.success === 'true') {
       Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'An error occurred',
+        type: 'invoiceSuccessToast', // Set the type to 'successToast' for success
+        text1: 'Success',
+        text2: 'Task Created Successfully',
         position: 'bottom',
       });
+      navigation.navigate('TaskManager');
+    } else {
+      Toast.show({
+        type: 'error', // Set the type to 'errorToast' for failure
+        text1: 'Error',
+        text2: 'Failed to create task',
+        position: 'bottom',
+      });
+      console.log(response);
     }
-  };
-
+  } catch (error) {
+    console.log(error);
+    Toast.show({
+      type: 'error', // Set the type to 'errorToast' for any other errors
+      text1: 'Error',
+      text2: 'An error occurred',
+      position: 'bottom',
+    });
+  }
+};
 
   return (
     <View style={styles.container}>

@@ -68,7 +68,6 @@ const ProductDetails = () => {
             productQuantity: productItems.total_product_quantity,
             totalProductQuantity: productItems.total_product_quantity,
             productArea: productItems.area.area_name,
-            // alternateProduct: productItems.alternate_products,
             productCost: productItems.cost,
             productCode: productItems.barcode,
             productDesc: productItems.product_description,
@@ -77,11 +76,6 @@ const ProductDetails = () => {
             imageUrl: productItems.image_url,
             alternateProduct: productItems.alternateproduct || [],
             productLocation: productItems.product_location,
-            // alternateProductQuantity:
-            // productItems.alternateproduct &&
-            // productItems.alternateproduct.length > 0
-            //   ? productItems.alternateproduct[0].total_quantity
-            //   : 0, 
 
           };
           setDetail(details);
@@ -123,7 +117,7 @@ const ProductDetails = () => {
             <Text style={styles.productName}>{detail.productName}</Text>
             <View style={styles.rowContainer}>
               <Text style={styles.rowText}>In Stock</Text>
-              <Text style={styles.infoText}>{detail.productCost} QAR</Text>
+              <Text style={styles.infoText}>{detail.productCost} AED</Text>
             </View>
           </View>
         </View>
@@ -149,7 +143,7 @@ const ProductDetails = () => {
         </View>
         <View style={styles.columnContainer}>
           <Text style={styles.productDetails}>Product Location</Text>
-          <Text style={styles.columnText}>{detail.productLocation}</Text>
+          <Text style={styles.columnText}>{detail.productLocation?.product_location_name}</Text>
         </View>
         <View style={styles.columnContainer}>
           <Text style={styles.productDetails}>Area</Text>

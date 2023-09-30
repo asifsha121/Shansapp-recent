@@ -31,7 +31,7 @@ const ProductList = ({ item, contact }) => {
                     }}
                 />
                 <Text style={styles.textFam}>{shortenedProductName}</Text>
-                <Text style={styles.textPrice}>Price : {productCost} QAR</Text>
+                <Text style={styles.textPrice}>Price : {productCost} AED</Text>
             </View>
         </TouchableOpacity>
     );

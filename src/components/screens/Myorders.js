@@ -102,7 +102,7 @@ export default function MyOrdersScreen() {
                   <Text> {formattedDate}</Text>
                 </View>
                 <View style={styles.cardContent}>
-                  <Text style={styles.paidAmount} variant="bodyMedium">QAR {item.paidAmount}</Text>
+                  <Text style={styles.paidAmount} variant="bodyMedium">AED {item.paidAmount}</Text>
                   {/* <Text style={styles.paidSuccess} variant="titleLarge">{item.invoiceStatus ? "Paid" : "Not Paid"}</Text> */}
                 </View>
               </View>

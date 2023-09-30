@@ -86,7 +86,7 @@ export default function ContactDetails({ route, navigation }) {
   const CreateinvoiceUrl = `${baseUrl}/createQuotation`
 
   const [totalPrice, setTotalprice] = useState([]);
-  const [currency, setCurrency] = useState("QAR")
+  const [currency, setCurrency] = useState("AED")
   const [tax, setTax] = useState([]);
   
   
@@ -183,33 +183,33 @@ export default function ContactDetails({ route, navigation }) {
   //   "return_quantity": 0
   // }))
 
-  const orderItems = addedProducts.map((product, index) => ({
-    "product_id": product.productID,
-    "tax_type_id": "648d9b8fef9cd868dfbfa37f",
-    "tax_value": 0,
-    "uom_id": null,
-    "uom": '',
-    "qty": prquantity[index],
-    "discount_percentage": 0,
-    "unit_price": product.productCost,
-    "remarks": '',
-    "total": prquantity[index] * product.productCost,
-  }))
-  // for qatar
-
-  
   // const orderItems = addedProducts.map((product, index) => ({
   //   "product_id": product.productID,
-  //   "tax_type_id": "648d9b54ef9cd868dfbfa37b",
-  //   "tax_value": 0.05,
+  //   "tax_type_id": "648d9b8fef9cd868dfbfa37f",
+  //   "tax_value": 0,
   //   "uom_id": null,
   //   "uom": '',
   //   "qty": prquantity[index],
   //   "discount_percentage": 0,
   //   "unit_price": product.productCost,
   //   "remarks": '',
-  //   "total": prquantity[index] * product.productCost,   
+  //   "total": prquantity[index] * product.productCost,
   // }))
+  // // for qatar
+
+  
+  const orderItems = addedProducts.map((product, index) => ({
+    "product_id": product.productID,
+    "tax_type_id": "648d9b54ef9cd868dfbfa37b",
+    "tax_value": 0.05,
+    "uom_id": null,
+    "uom": '',
+    "qty": prquantity[index],
+    "discount_percentage": 0,
+    "unit_price": product.productCost,
+    "remarks": '',
+    "total": prquantity[index] * product.productCost,   
+  }))
 
   // // for Dubai
 
@@ -392,14 +392,14 @@ export default function ContactDetails({ route, navigation }) {
                 <View style={{ flexDirection: "column" }}>
                   <Text style={styles.productLabel}>Total Quantity: {addedProducts.length}</Text>
                   {/*---------------------------- for qatar u want to hide this component -------------- */}
-                  {/* <View style={{ flexDirection: "row" }}>
+                  <View style={{ flexDirection: "row" }}>
                     <Text style={styles.productLabel}>Untaxed Amount:  </Text>
                     <Text style={styles.productText}> {totalPriceSum} {currency}</Text>
                   </View>
                   <View style={{ flexDirection: "row" }}>
                     <Text style={styles.productLabel}>Tax Amount:  </Text>
                     <Text style={styles.productText}> {totalTax} {currency}</Text>
-                  </View> */}
+                  </View>
                   <View style={{ flexDirection: "row", }}>
                     <Text style={styles.productLabel}>Total Amount:  </Text>
                     <Text style={styles.productText}> {totalPriceSum} {currency}</Text>

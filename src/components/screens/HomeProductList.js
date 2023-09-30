@@ -34,7 +34,7 @@ const HomeProductList = ({ item }) => {
                     <Text style={styles.bottomText}>New Lowest Price</Text>
                 </View>
                 <Text style={styles.textFam}>{shortenedProductName}</Text>
-                <Text style={styles.textPrice}>Price : {productCost} QAR</Text>
+                <Text style={styles.textPrice}>Price : {productCost} AED</Text>
             </View>
         </TouchableOpacity>
     );
