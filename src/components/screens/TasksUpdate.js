@@ -14,7 +14,7 @@ import { AntDesign } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import SpeechToText from '../SpeechToText/SpeechToText';
 import { languageDropDownData } from '../../constants/constant';
-import * as FileSystem from 'expo-file-system';
+import * as Speech from "expo-speech"
 
 // bottomButtton
 const CustomSubmitButton = ({ title, onPress }) => {
@@ -96,14 +96,33 @@ const TasksUpdate = ({ navigation, route }) => {
     // const [isModalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
+    const [adminData, setAdminData] = useState()
 
     //update container data
     const [taskAddUpdates, setTaskAddUpdates] = useState([]);
 
-
+    // add updates modal
     // speech to text and change 
     const [taskDetails, setTaskDetails] = useState('');
+    // add updates validation
+    const [errors, setErrors] = useState({})
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Validate the taskTitle field (example: required field)
+        // if (!selectedImage) {
+        //     newErrors.taskTitle = 'Select a image is required';
+        // }
+
+        if (!taskDetails) {
+            newErrors.taskDetails = 'Update Details field is required';
+        }
+
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
 
 
@@ -113,8 +132,9 @@ const TasksUpdate = ({ navigation, route }) => {
 
 
     // Define a state variable to hold the audio object
-    const [audio, setAudio] = useState(null);
-    const [adminData, setAdminData] = useState()
+    // const [audio, setAudio] = useState(null);
+
+
 
 
     console.log("Status", status)
@@ -125,37 +145,28 @@ const TasksUpdate = ({ navigation, route }) => {
 
 
 
-    // Function to play the audio from the provided URI
-    const playAudio = async () => {
-        console.log("i am playing");
-    
-        try {
-            if (audio) {
-                // If audio is already playing, stop it
-                await audio.stopAsync();
-                console.log("i am found");
-                audio.unloadAsync(); // Unload the audio to release the player
-            }
-    
-            if (task.audio_url) { // Check if audio_url is defined
-                const { sound } = await Audio.Sound.createAsync(
-                    { uri: task.audio_url } // Use the audio URL from your task
-                );
-    
-                setAudio(sound);
-                await sound.playAsync(); // Play the audio
-                console.log("Audio playing");
-            } else {
-                console.error("Audio URL is null or undefined");
-            }
-        } catch (error) {
-            console.error("Error in playAudio:", error);
-            // Handle the error appropriately, e.g., show an error message to the user
-        }
-    };
-    
+    // text to speech
+    const Speak = () => {
+        const textToSay = description
+        Speech.speak(textToSay)
+    }
 
-    
+    // add updates playback
+    const onPlayButtonClick = (audio) => {
+        Speech.speak(audio)
+    }
+
+    // we can also use this
+    // const onPlayButtonClick = (audio) => {
+    //     if (audio) {
+    //         Speech.speak(audio);
+    //     } else {
+    //         Speech.speak(description); // Use the description as default if no audio is provided
+    //     }
+    // }
+
+
+
 
     const fetchAddUpdatesData = async () => {
         try {
@@ -200,12 +211,14 @@ const TasksUpdate = ({ navigation, route }) => {
 
     console.log('Updates-------------------:', taskDetails);
     const handleSave = async () => {
-        // Save your data here (updates, selectedImage)
-        // You can use this information to update your state or send it to a server.
-        // Remember to implement validation and handling for selectedImage.
+        const isFormValid = validateForm();
+        if (!isFormValid) {
+            return;
+        }
         console.log('Updates-------------------:', taskDetails);
         console.log('Selected Image:', selectedImage);
         try {
+
             const addTaskUpdatesData = {
                 "task_managment_id": id,
                 "create_task_add_update": [
@@ -461,6 +474,7 @@ const TasksUpdate = ({ navigation, route }) => {
                                         multiline
                                         style={[styles.input, styles.textArea]}
                                     />
+                                    {errors.taskDetails && <Text style={styles.errorText}>{errors.taskDetails}</Text>}
                                     <SpeechToText setTaskDetails={setTaskDetails} selectedLanguage={selectedLanguage} />
                                     <TouchableOpacity onPress={selectDoc}>
                                         <View style={{ position: 'relative', width: 100, height: 100 }}>
@@ -695,8 +709,8 @@ const TasksUpdate = ({ navigation, route }) => {
                         onChangeText={(text) => setDescription(text)}
 
                     />
-                    <Text style={styles.label}>Audio Play Back</Text>
-                    <TouchableOpacity onPress={playAudio}>
+                    <Text style={styles.label}>Play Back</Text>
+                    <TouchableOpacity onPress={Speak}>
                         <AntDesign name="play" size={24} color="green" />
                     </TouchableOpacity>
                     <View style={styles.updateContainer}>
@@ -704,15 +718,25 @@ const TasksUpdate = ({ navigation, route }) => {
                         {taskAddUpdates.map((update, index) => (
                             <View key={index} style={[styles.updateCard, { flexDirection: 'row' }]}>
                                 {update.image_url ? (
-                                    <Image source={{ uri: update.image_url }} style={{ width: 100, height: 100, marginLeft: 3 }} />
+                                    <TouchableOpacity onPress={() => navigation.navigate('TaskUpdateFullScreenImage', { imageUrl: update.image_url })}>
+                                        <Image source={{ uri: update.image_url }} style={{ width: 100, height: 100, marginLeft: 3 }} />
+                                    </TouchableOpacity>
                                 ) : (
+
                                     <Image source={require("../../../assets/updateTask/image.png")} style={{ width: 100, height: 100, marginLeft: 3 }} />
+
                                 )}
                                 <View style={styles.cardContent}>
-                                    <Text style={{ color: "black", fontSize: 18, maxWidth: "80%" }}>
+                                    <Text style={{ color: "black", fontSize: 14, maxWidth: "80%" }}>
                                         {update.updates || "No updates available"}
                                     </Text>
-                                    <Text style={{ color: "gray", fontWeight: 600, marginTop: 10 }}>{update?.requested_by_name}</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: "center" }}>
+
+                                        <Text style={{ color: "gray", fontWeight: 600, marginTop: 10 }}>{update?.requested_by_name}</Text>
+                                        <TouchableOpacity onPress={() => onPlayButtonClick(update.updates)}>
+                                            <AntDesign name="playcircleo" size={24} color="blue" style={{ marginLeft: 70 }} />
+                                        </TouchableOpacity>
+                                    </View>
                                     <Text style={{ color: "gray", fontWeight: 600, marginTop: 5 }}> {format(new Date(update.create_date), 'dd MMM yyyy h:mm a')}</Text>
                                 </View>
                             </View>
@@ -907,6 +931,10 @@ const styles = StyleSheet.create({
     submitButtonContainer: {
         marginHorizontal: 20,
         marginVertical: 10,
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 1,
     },
 });
 

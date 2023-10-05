@@ -39,8 +39,7 @@ import AddTask from "./src/components/screens/AddTask";
 import BarCode from "./src/components/QrScanner/BarCode";
 import FullImageScreen from "./src/components/screens/FullImageScreen";
 import TasksUpdate from "./src/components/screens/TasksUpdate";
-
-
+import TaskUpdateFullScreenImage from "./src/components/screens/TaskUpdateFullScreenImage";
 
 // console.disableYellowBox = true;
 
@@ -147,6 +146,7 @@ const App = () => {
           <Stack.Screen name="AddTask" component={AddTask} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Add Task" }} />
           <Stack.Screen name="BarCode" component={BarCode} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Bar Code" }} />
           <Stack.Screen name="FullImage" component={FullImageScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TaskUpdateFullScreenImage" component={TaskUpdateFullScreenImage} options={{ headerShown: false }} />
           <Stack.Screen name="TaskUpdate" component={TasksUpdate} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Task Update" }} />
           <Stack.Screen name="Cancel" component={CancelService} options={{ headerShown: false, }}/>
           <Stack.Screen name="EditService" component={EditService} options={{ headerShown: false, }}/>
