@@ -227,7 +227,6 @@ const TasksUpdate = ({ navigation, route }) => {
                         "requested_by_name": adminData?.related_profile?.name,
                         "updates": taskDetails || null,
                         "image_url": selectedImage || null,
-
                     }
                 ]
             }
@@ -344,7 +343,7 @@ const TasksUpdate = ({ navigation, route }) => {
         //   setRemarks(task.description); // Set Remarks based on task.description
         setDescription(task.description) //
         setStatus(task?.status || "Select Status")
-        setRemarks(task?.remarks || "Enter Remarks")
+        setRemarks(task?.remarks || "")
         setTaskCreatorId(task?.created_by_id)
     }, [task]);
     //fetching employee details
@@ -392,6 +391,8 @@ const TasksUpdate = ({ navigation, route }) => {
                 "daily_scheduler": true,
                 "weakly_scheduler": [],
                 "monthly_scheduler": [],
+                "updated_by_name": adminData?.related_profile?.name,
+                "updated_by_id": adminData?.related_profile?._id
             }
             console.log("Update Task Data:", updateData)
             const response = await axios.put(addTaskUpdatesUrl, updateData)

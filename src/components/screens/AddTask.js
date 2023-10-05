@@ -207,6 +207,7 @@ const AddTask = () => {
         "priority": formData?.priority?.value || null,
         "assignee_id": formData?.assignee?.id || null,
         "created_by_id": adminData?.related_profile?._id,
+        "created_by_name": adminData?.related_profile?.name || null,
         "warehouse_id": adminData?.warehouse_id || null,
         "is_scheduled": true,
         "daily_scheduler": true,
