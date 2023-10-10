@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Button ,TouchableWithoutFeedback} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Button, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from "@expo/vector-icons";
 import WeekCalendar from '../Calender/WeakCalendar';
@@ -8,12 +8,6 @@ import { baseUrl } from '../../api/const';
 import { useIsFocused } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { Foundation } from '@expo/vector-icons';
-
-
-
-
-
-
 
 export const GoBack = ({ title, onPress }) => {
     const navigation = useNavigation();
@@ -24,15 +18,13 @@ export const GoBack = ({ title, onPress }) => {
                     <AntDesign name="left" size={20} color="black" />
                     <Text style={styles.buttonText}>{title}</Text>
                 </View>
-                <Foundation name="graph-pie" size={24} color="black" style={{marginRight:15}}
-                    onPress={()=>{navigation.navigate('TaskStat')}}
+                <Foundation name="graph-pie" size={28} color="black" style={{ marginRight: 15 }}
+                    onPress={() => { navigation.navigate('TaskStat') }}
                 />
             </View>
         </TouchableWithoutFeedback>
     );
 };
-
-
 
 //formate estimated time
 const formatEstimatedTime = (estimatedTime) => {
@@ -64,7 +56,7 @@ const TaskManager = () => {
     const [taskData, setTaskData] = useState([]);
 
     const navigation = useNavigation();
-    
+
 
     const formattedDate = date.toISOString().slice(0, 10);
     useEffect(() => {
@@ -85,6 +77,7 @@ const TaskManager = () => {
         }
     }, [formattedDate, isFocused]);
     // Add formattedDate as a dependency to re-fetch when the date changes
+
 
     return (
         <View style={styles.container}>
@@ -130,9 +123,14 @@ const TaskManager = () => {
                                             </Text>
                                         </Text>
                                         <Text style={styles.taskLabel}>
+
                                             Deadline{' '}:{' '}
-                                            <Text style={styles.deadlineText}>
-                                                {format(new Date(task.due_date), 'dd MMM yyyy h:mm a')}
+                                            <Text style={styles.taskLabel}>
+                                                {format(new Date(task.due_date), 'dd MMM yyyy ')}
+                                                {task.estimated_time === '10 PM'
+                                                    ? task.estimated_time
+                                                    : format(new Date(task.estimated_time), 'hh:mm a')}
+                                                {/* {format(new Date(task.estimated_time), 'h:mm a')} */}
                                             </Text>
                                         </Text>
                                     </View>
@@ -161,8 +159,10 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         backgroundColor: "#ffa600",
-        flexDirection:'row',
-        justifyContent:'space-between'
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingBottom: 5,
+        paddingTop: 5
     },
     buttonContent: {
         flexDirection: "row",
@@ -261,18 +261,18 @@ const styles = StyleSheet.create({
     labelValueContainer: {
         flexDirection: 'row',
         marginBottom: 8,
-      },
-      label: {
+    },
+    label: {
         width: 100, // Adjust as needed to control the label width
         fontWeight: 'bold',
         fontSize: 17,
         color: 'gray',
-      },
-      value: {
+    },
+    value: {
         flex: 1,
         fontSize: 17,
         color: 'black',
-      },
+    },
 });
 
 export default TaskManager;

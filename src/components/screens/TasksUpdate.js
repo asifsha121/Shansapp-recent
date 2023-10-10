@@ -59,9 +59,6 @@ const TasksUpdate = ({ navigation, route }) => {
     const detailTaskurl = `${baseUrl}/viewTaskManagment/${id}`
 
     const [isFocus, setIsFocus] = useState(false);
-    const [openStartDate, setOpenStartDate] = useState(false);
-    const [selectedStartDate, setSelectedStartDate] = useState(null);
-    const [selectedStartTime, setSelectedStartTime] = useState(null);
     const [openDueDate, setOpenDueDate] = useState(false);
     const [selectedDueDate, setSelectedDueDate] = useState(null);
     const [selectedDueTime, setSelectedDueTime] = useState(null);
@@ -81,6 +78,7 @@ const TasksUpdate = ({ navigation, route }) => {
     const [remarks, setRemarks] = useState('');
     const [description, setDescription] = useState('')
     const [taskStartDateAndTime, setTaskDateAndTime] = useState();
+    const [taskDueTime, setTaskDueTime] = useState('')
     const [taskDueDateAndTime, setTaskDueDateAndTime] = useState();
 
     //checking creator or not while updating details
@@ -326,16 +324,24 @@ const TasksUpdate = ({ navigation, route }) => {
         // Parse create_date string into a Date object
         const createDate = new Date(task.create_date);
         const dueDate = new Date(task.due_date)
+        const dueTime = new Date(task?.estimated_time)
+        const formattedTime =
+            task?.estimated_time === '10 PM'
+                ? task?.estimated_time
+                : format(dueTime, 'hh:mm a');
+        
+
 
         // Format the date as yyyy-MM-dd HH:mm
-        const formattedCreateDate = format(createDate, 'yyyy-MM-dd HH:mm');
+        const formattedCreateDate = format(createDate, 'yyyy-MM-dd hh:mm a');
 
         //format the due date as yyyy-MM-dd HH:mm
-        const formattedDueDate = format(dueDate, 'yyyy-MM-dd HH:mm');
+        const formattedDueDate = format(dueDate, 'yyyy-MM-dd');
 
         // Set the formatted date as the initial value of Start Date
         setTaskDateAndTime(formattedCreateDate);
         setTaskDueDateAndTime(formattedDueDate)
+        setTaskDueTime(formattedTime)
 
         //setStatus(task.status); // Set Status based on task.status
         setTaskTitle(task.title); // Set Task Title based on task.title
@@ -379,13 +385,13 @@ const TasksUpdate = ({ navigation, route }) => {
                 "task_managment_id": id,
                 "title": taskTitle,
                 "description": description,
-                "start_date": selectedStartDate,
                 "due_date": selectedDueDate,
                 "estimated_time": selectedDueTime,
                 "status": status,
                 "priority": priority,
                 "assignee_id": formData?.assignee?.id || null,
                 "assignee": formData?.assignee?.id || null,
+                "assignee_name": formData?.assignee?.name || null,
                 "remarks": remarks,
                 "is_scheduled": true,
                 "daily_scheduler": true,
@@ -572,63 +578,16 @@ const TasksUpdate = ({ navigation, route }) => {
                     <Text style={styles.label}>Start Date:</Text>
                     <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between' }]}>
                         <Text>
-                            {selectedStartDate ? selectedStartDate.toDateString() : taskStartDateAndTime}
-                            {selectedStartTime ? ` - ${selectedStartTime.toLocaleTimeString()}` : ''}{' '}
+                            {taskStartDateAndTime ? taskStartDateAndTime : ""}
+                            {/* {selectedStartTime ? ` - ${selectedStartTime.toLocaleTimeString()}` : ''}{' '} */}
                         </Text>
-                        <View style={{ flexDirection: 'row', alignSelf: "flex-end" }}>
-                            {isTaskCreator && (
-                                <>
-                                    <TouchableOpacity onPress={() => setOpenStartDate(true)}>
-                                        <Image source={require("../../../assets/addTask/calendar.png")} style={{ width: 25, height: 25 }} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => setOpenTime(true)} >
-                                        <Image source={require("../../../assets/addTask/time.png")} style={{ width: 25, height: 25, marginLeft: 15 }} />
-                                    </TouchableOpacity>
-                                </>
-                            )}
-                        </View>
                     </View>
-                    {/* Start Date */}
-                    {/* Open calendar when icon is pressed */}
-                    {openStartDate && (
-                        <DateTimePicker
-                            testID="Start Date"
-                            value={new Date()}
-                            mode="date"
-                            onChange={(event, selectedDate) => {
-                                if (selectedDate !== undefined) {
-                                    setOpenStartDate(false);
-                                    setSelectedStartDate(selectedDate);
-                                    console.log("Selected Start Date:", selectedDate);
-                                }
-                            }}
-                            display="default"
-                        />
-                    )}
-                    {/* Open time when icon is pressed */}
-                    {openTime && (
-                        <DateTimePicker
-                            testID="Start Time"
-                            value={selectedStartTime || new Date()}
-                            mode="time"
-                            is24Hour={true}
-                            onChange={(event, selectedTime) => {
-                                if (selectedTime !== undefined) {
-                                    setOpenTime(false);
-                                    setSelectedStartTime(selectedTime);
-                                    console.log("Selected Start Time:", selectedTime);
-                                }
-                            }}
-                            display="default"
-                        />
-                    )}
-
                     {/* Due Date */}
                     <Text style={styles.label}>Due Date:</Text>
                     <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between' }]}>
                         <Text>
-                            {selectedDueDate ? selectedDueDate.toDateString() : taskDueDateAndTime}
-                            {selectedDueTime ? ` - ${selectedDueTime.toLocaleTimeString()}` : ''}{' '}
+                            {selectedDueDate ? selectedDueDate.toDateString() : taskDueDateAndTime}{'  '}
+                            {selectedDueTime ? ` -  ${selectedDueTime.toLocaleTimeString()}` : taskDueTime}{' '}
                         </Text>
                         <View style={{ flexDirection: 'row', alignSelf: "flex-end" }}>
                             {isTaskCreator && (
@@ -665,9 +624,12 @@ const TasksUpdate = ({ navigation, route }) => {
                     {openTime && (
                         <DateTimePicker
                             testID="Due Time"
-                            value={selectedDueTime || new Date()}
+                            value={new Date()}
                             mode="time"
+                            positiveButton={{ label: 'OK', textColor: 'red' }}
+                            negativeButton={{ label: 'Cancel', textColor: 'red' }}
                             is24Hour={true}
+                            display="spinner"
                             onChange={(event, dueSelectedTime) => {
                                 if (dueSelectedTime !== undefined) {
                                     setOpenTime(false);
@@ -675,7 +637,6 @@ const TasksUpdate = ({ navigation, route }) => {
                                     console.log("Due Selected Time:", dueSelectedTime);
                                 }
                             }}
-                            display="default"
                         />
                     )}
                     <Text style={styles.label}>Priority:</Text>

@@ -203,7 +203,7 @@ const AddTask = () => {
         "description": taskDetails,
         "status": "New",
         "due_date": selectedDate,
-        "estimated_time": selectedTime,
+        "estimated_time": selectedTime || "10 PM",
         "priority": formData?.priority?.value || null,
         "assignee_id": formData?.assignee?.id || null,
         "created_by_id": adminData?.related_profile?._id,
@@ -215,6 +215,7 @@ const AddTask = () => {
         "participants": [],
         "watchers": [],
         "audio_url": null,
+        "assignee_name": formData?.assignee?.name,
         "assignee": [
           formData?.assignee?.id || null,
         ]
@@ -373,7 +374,7 @@ const AddTask = () => {
               testID="Assigned on time"
               value={selectedTime || new Date()}
               mode="time"
-              positiveButton={{ label: 'OK', textColor: 'white' }}
+              positiveButton={{ label: 'OK', textColor: 'red' }}
               negativeButton={{ label: 'Cancel', textColor: 'red' }}
               is24Hour={true}
               display="spinner"
