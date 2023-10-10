@@ -31,26 +31,13 @@ export default function TaskStatistics() {
             );
         };
 
-    const [totalTask,setTask] = useState(25);
-    const [completedTask,setCompletetask] = useState(15);
-    const [pendingTask,setPendingTask] = useState(6);
-    const [overdueTask,setOverdueTask] = useState(4);
-    const [tasksByUser,setTaskByUser]= useState(10);
-    const [taskAssignedToUser,setTaskAssingnedToUser]=useState(15);
 
     const[create_by_task,set_create_by_task]=useState([]);
     const[asigned_by_task,set_asigned_by_task]=useState([]);    
     const[total_task_data,set_total_task_data]=useState([]);
 
     
-        const total = totalTask;
-        const completedPercentage = (completedTask / total) * 100;
-        const pendingPercentage = (pendingTask / total) * 100;
-        const overduePercentage = (overdueTask / total) * 100;
-        const taskbyUserPercentage=(tasksByUser/totalTask)*100;
-        const taskAssignedtoUserPercentage= (taskAssignedToUser/totalTask)*100;
-        const remainingTaskbyUserPercentage= ((totalTask-tasksByUser)/totalTask)*100;
-        const remainingTaskAssignedtoUserPercentage=((totalTask-taskAssignedToUser)/totalTask)*100;
+        
 
 
     
