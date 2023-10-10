@@ -77,6 +77,8 @@ export default function TaskStatistics() {
 
     console.log("name",userName)
 
+
+    //URL for statistics
     const statUrl = userId ? `${baseUrl}/taskManagementDashboard?employee_id=${userId}` : '';
 
     useEffect(()=>{
@@ -88,14 +90,85 @@ export default function TaskStatistics() {
         }).catch(err=>{console.log(err)});
     },[userId])
 
+
     console.log("Create",typeof(create_by_task));
     console.log("assign",asigned_by_task);
     console.log("total",total_task_data);
 
+
+    //for conditional rendering of Component
     const shouldRenderContent =
     Object.keys(create_by_task).length > 0 &&
     Object.keys(asigned_by_task).length > 0 &&
     Object.keys(total_task_data).length > 0;
+
+
+    //variable that stores values of piechart
+    const createByTaskData = [
+            {
+            value: (create_by_task.completed_task_managments / create_by_task.totalCount) * 100,
+            color: "#c0ff8c",
+            text: `${(create_by_task.completed_task_managments / create_by_task.totalCount) * 100}%`,
+            },
+            {
+            value: (create_by_task.pending_task_managments / create_by_task.totalCount) * 100,
+            color: "#8beafe",
+            text: `${(create_by_task.pending_task_managments / create_by_task.totalCount) * 100}%`,
+            },
+            {
+            value: (create_by_task.due_task_managments / create_by_task.totalCount) * 100,
+            color: "#fd8d9e",
+            text: `${(create_by_task.due_task_managments / create_by_task.totalCount) * 100}%`,
+            },
+        ];
+        
+        //filter to  only take values greater than zero for piechart 
+        const filteredCreateByTaskData = createByTaskData.filter(item => item.value > 0);
+
+         //variable that stores values of piechart
+        const asigned_by_task_data = [
+            {
+            value: (asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100,
+            color: "#c0ff8c",
+            text: `${(asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100}%`,
+            },
+            {
+            value: (asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100,
+            color: "#8beafe",
+            text: `${(asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100}%`,
+            },
+            {
+            value: (asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100,
+            color: "#fd8d9e",
+            text: `${(asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100}%`,
+            },
+        ];
+
+        //filter to  only take values greater than zero for piechart 
+        const filtered_asigned_by_task_data =  asigned_by_task_data.filter(item => item.value > 0);
+
+
+        //variable that stores values of piechart
+        const total_task_data_data = [
+            {
+            value: (total_task_data.completed_task_managments / total_task_data.totalCount) * 100,
+            color: "#c0ff8c",
+            text: `${(total_task_data.completed_task_managments / total_task_data.totalCount) * 100}%`,
+            },
+            {
+            value: (total_task_data.pending_task_managments / total_task_data.totalCount) * 100,
+            color: "#8beafe",
+            text: `${(total_task_data.pending_task_managments / total_task_data.totalCount) * 100}%`,
+            },
+            {
+            value: (total_task_data.due_task_managments / total_task_data.totalCount) * 100,
+            color: "#fd8d9e",
+            text: `${(total_task_data.due_task_managments / total_task_data.totalCount) * 100}%`,
+            },
+        ];
+
+        //filter to  only take values greater than zero for piechart 
+        const filtered_total_task_data_data =  total_task_data_data.filter(item => item.value > 0);
 
 
 
@@ -130,11 +203,7 @@ export default function TaskStatistics() {
                             <Text  style={[styles.fielddata]}>{total_task_data.due_task_managments}</Text>
                         </View>
                         
-                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
-                        { value: (total_task_data.completed_task_managments/total_task_data.totalCount)*100, color: "#c0ff8c", text: `${(total_task_data.completed_task_managments/total_task_data.totalCount)*100}%` },
-                        { value: (total_task_data.pending_task_managments/total_task_data.totalCount)*100, color: "#8beafe", text: `${(total_task_data.pending_task_managments/total_task_data.totalCount)*100}%` },
-                        { value: (total_task_data.due_task_managments/total_task_data.totalCount)*100, color: "#fd8d9e", text: `${(total_task_data.due_task_managments/total_task_data.totalCount)*100}%` },
-                        ]} 
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={filtered_total_task_data_data} 
                     />
 
                     <View
@@ -182,11 +251,7 @@ export default function TaskStatistics() {
                             <Text  style={[styles.fielddata]}>{create_by_task.due_task_managments}</Text>
                         </View>
                         
-                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
-                        { value: (create_by_task.completed_task_managments/create_by_task.totalCount)*100, color: "#c0ff8c", text: `${(create_by_task.completed_task_managments/create_by_task.totalCount)*100}%` },
-                        { value: (create_by_task.pending_task_managments/create_by_task.totalCount)*100, color: "#8beafe", text: `${(create_by_task.pending_task_managments/create_by_task.totalCount)*100}%` },
-                        { value: (create_by_task.due_task_managments/create_by_task.totalCount)*100, color: "#fd8d9e", text: `${(create_by_task.due_task_managments/create_by_task.totalCount)*100}%` },
-                        ]} 
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={filteredCreateByTaskData} 
                     />
 
                     <View
@@ -218,7 +283,7 @@ export default function TaskStatistics() {
                     </View>
 
                         <View  style={styles.field}>
-                            <Text style={styles.fieldname}>Task Created By Employee :</Text>
+                            <Text style={styles.fieldname}>Task Assigned to Employee :</Text>
                             <Text  style={styles.fielddata}>{asigned_by_task.totalCount}</Text>
                         </View>
                         <View  style={styles.field}>
@@ -234,11 +299,7 @@ export default function TaskStatistics() {
                             <Text  style={[styles.fielddata]}>{asigned_by_task.due_task_managments}</Text>
                         </View>
                         
-                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
-                        { value: (asigned_by_task.completed_task_managments/asigned_by_task.totalCount)*100, color: "#c0ff8c", text: `${(asigned_by_task.completed_task_managments/asigned_by_task.totalCount)*100}%` },
-                        { value: (asigned_by_task.pending_task_managments/asigned_by_task.totalCount)*100, color: "#8beafe", text: `${(asigned_by_task.pending_task_managments/asigned_by_task.totalCount)*100}%` },
-                        { value: (asigned_by_task.due_task_managments/asigned_by_task.totalCount)*100, color: "#fd8d9e", text: `${(asigned_by_task.due_task_managments/asigned_by_task.totalCount)*100}%` },
-                        ]} 
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={filtered_asigned_by_task_data} 
                     />
 
                     <View
