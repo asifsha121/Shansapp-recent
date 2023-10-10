@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Button ,TouchableWithoutFeedback} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from "@expo/vector-icons";
 import WeekCalendar from '../Calender/WeakCalendar';
@@ -7,7 +7,30 @@ import axios from 'axios';
 import { baseUrl } from '../../api/const';
 import { useIsFocused } from '@react-navigation/native';
 import { format } from 'date-fns';
-import GoBack from '../NavGoBack/GoBack';
+import { Foundation } from '@expo/vector-icons';
+
+
+
+
+
+
+
+export const GoBack = ({ title, onPress }) => {
+    const navigation = useNavigation();
+    return (
+        <TouchableWithoutFeedback onPress={onPress}>
+            <View style={styles.buttonContainer}>
+                <View style={styles.buttonContent}>
+                    <AntDesign name="left" size={20} color="black" />
+                    <Text style={styles.buttonText}>{title}</Text>
+                </View>
+                <Foundation name="graph-pie" size={24} color="black" style={{marginRight:15}}
+                    onPress={()=>{navigation.navigate('TaskStat')}}
+                />
+            </View>
+        </TouchableWithoutFeedback>
+    );
+};
 
 
 
@@ -39,7 +62,9 @@ const TaskManager = () => {
     const isFocused = useIsFocused();
     const [date, setDate] = useState(new Date());
     const [taskData, setTaskData] = useState([]);
+
     const navigation = useNavigation();
+    
 
     const formattedDate = date.toISOString().slice(0, 10);
     useEffect(() => {
@@ -136,6 +161,8 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         backgroundColor: "#ffa600",
+        flexDirection:'row',
+        justifyContent:'space-between'
     },
     buttonContent: {
         flexDirection: "row",

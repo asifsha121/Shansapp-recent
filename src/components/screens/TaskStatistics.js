@@ -1,0 +1,335 @@
+import React, { useState, useEffect } from "react";
+import { View,Text,StyleSheet } from "react-native";
+import { PieChart } from "react-native-gifted-charts";
+import { useNavigation } from "@react-navigation/native";
+import GoBack from "../NavGoBack/GoBack";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from "react-native";
+import { baseUrl } from "../../api/const";
+import axios from "axios";
+
+
+export default function TaskStatistics() {
+    const navigation = useNavigation();
+
+
+    const [user, setUser] = useState(null);
+
+    
+
+    const renderDot = color => {
+        return (
+            <View
+                style={{
+                height: 10,
+                width: 10,
+                borderRadius: 5,
+                backgroundColor: color,
+                marginRight: 10,
+                }}
+            />
+            );
+        };
+
+    const [totalTask,setTask] = useState(25);
+    const [completedTask,setCompletetask] = useState(15);
+    const [pendingTask,setPendingTask] = useState(6);
+    const [overdueTask,setOverdueTask] = useState(4);
+    const [tasksByUser,setTaskByUser]= useState(10);
+    const [taskAssignedToUser,setTaskAssingnedToUser]=useState(15);
+
+    const[create_by_task,set_create_by_task]=useState([]);
+    const[asigned_by_task,set_asigned_by_task]=useState([]);    
+    const[total_task_data,set_total_task_data]=useState([]);
+
+    
+        const total = totalTask;
+        const completedPercentage = (completedTask / total) * 100;
+        const pendingPercentage = (pendingTask / total) * 100;
+        const overduePercentage = (overdueTask / total) * 100;
+        const taskbyUserPercentage=(tasksByUser/totalTask)*100;
+        const taskAssignedtoUserPercentage= (taskAssignedToUser/totalTask)*100;
+        const remainingTaskbyUserPercentage= ((totalTask-tasksByUser)/totalTask)*100;
+        const remainingTaskAssignedtoUserPercentage=((totalTask-taskAssignedToUser)/totalTask)*100;
+
+
+    
+
+    
+
+        useEffect(() => {
+            
+    
+            const fetchData = async () => {
+                try {
+                    const storedData = await AsyncStorage.getItem('adminDetails');
+                    if (storedData !== null) {
+                        const userData = JSON.parse(storedData);
+                        setUser(userData);
+                    } else {
+                        setUser(null); // Set user to null if data is not found
+                    }
+                } catch (error) {
+                    console.log('error fetching data', error);
+                    setUser(null); // Set user to null in case of an error
+                }
+            };
+    
+            fetchData();
+        }, []);
+
+    
+
+    
+
+    const userId = user && user.related_profile && user.related_profile._id;
+
+    const userName= user && user.related_profile && user.related_profile.name;
+
+    console.log("user _id:", userId);
+
+    console.log("name",userName)
+
+    const statUrl = userId ? `${baseUrl}/taskManagementDashboard?employee_id=${userId}` : '';
+
+    useEffect(()=>{
+        axios.get(statUrl).then(res=>{
+            console.log(res.data);
+            set_asigned_by_task(res.data.asigned_by_task);
+            set_create_by_task(res.data.create_by_task);
+            set_total_task_data(res.data.total_task_data);
+        }).catch(err=>{console.log(err)});
+    },[userId])
+
+    console.log("Create",typeof(create_by_task));
+    console.log("assign",asigned_by_task);
+    console.log("total",total_task_data);
+
+    const shouldRenderContent =
+    Object.keys(create_by_task).length > 0 &&
+    Object.keys(asigned_by_task).length > 0 &&
+    Object.keys(total_task_data).length > 0;
+
+
+
+
+    
+
+    return (
+        <View style={styles.container}>
+            <GoBack title="Task Statistcs" onPress={() => navigation.goBack()} />
+
+            <ScrollView>
+            {shouldRenderContent ? (
+                        <View style={styles.content}>
+                        <View  style={styles.field}>
+                            <Text style={styles.empname}>Employee Name:</Text>
+                            <Text  style={styles.empvalue}>{userName}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Total Task:</Text>
+                            <Text  style={styles.fielddata}>{total_task_data.totalCount}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Completed :</Text>
+                            <Text  style={[styles.fielddata]}>{total_task_data.completed_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Pending :</Text>
+                            <Text  style={[styles.fielddata]}>{total_task_data.pending_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Overdue :</Text>
+                            <Text  style={[styles.fielddata]}>{total_task_data.due_task_managments}</Text>
+                        </View>
+                        
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
+                        { value: (total_task_data.completed_task_managments/total_task_data.totalCount)*100, color: "#c0ff8c", text: `${(total_task_data.completed_task_managments/total_task_data.totalCount)*100}%` },
+                        { value: (total_task_data.pending_task_managments/total_task_data.totalCount)*100, color: "#8beafe", text: `${(total_task_data.pending_task_managments/total_task_data.totalCount)*100}%` },
+                        { value: (total_task_data.due_task_managments/total_task_data.totalCount)*100, color: "#fd8d9e", text: `${(total_task_data.due_task_managments/total_task_data.totalCount)*100}%` },
+                        ]} 
+                    />
+
+                    <View
+                        style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                        }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                width: 120,
+                                marginRight: 20,
+                            }}>
+                            {renderDot('#c0ff8c')}
+                            <Text>Compeleted: {(total_task_data.completed_task_managments/total_task_data.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#8beafe')}
+                            <Text>Pending: {(total_task_data.pending_task_managments/total_task_data.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#fd8d9e')}
+                            <Text>Overdue: {(total_task_data.due_task_managments/total_task_data.totalCount)*100}%</Text>
+                        </View>
+                    </View>
+
+                        <View style={styles.field}>
+                            <Text style={styles.fieldname}>Task Created By Employee :</Text>
+                            <Text  style={styles.fielddata}>{create_by_task.totalCount}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Completed :</Text>
+                            <Text  style={[styles.fielddata]}>{create_by_task.completed_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Pending :</Text>
+                            <Text  style={[styles.fielddata]}>{create_by_task.pending_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Overdue :</Text>
+                            <Text  style={[styles.fielddata]}>{create_by_task.due_task_managments}</Text>
+                        </View>
+                        
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
+                        { value: (create_by_task.completed_task_managments/create_by_task.totalCount)*100, color: "#c0ff8c", text: `${(create_by_task.completed_task_managments/create_by_task.totalCount)*100}%` },
+                        { value: (create_by_task.pending_task_managments/create_by_task.totalCount)*100, color: "#8beafe", text: `${(create_by_task.pending_task_managments/create_by_task.totalCount)*100}%` },
+                        { value: (create_by_task.due_task_managments/create_by_task.totalCount)*100, color: "#fd8d9e", text: `${(create_by_task.due_task_managments/create_by_task.totalCount)*100}%` },
+                        ]} 
+                    />
+
+                    <View
+                        style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                        }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                width: 120,
+                                marginRight: 20,
+                            }}>
+                            {renderDot('#c0ff8c')}
+                            <Text>Compeleted: {(create_by_task.completed_task_managments/create_by_task.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#8beafe')}
+                            <Text>Pending: {(create_by_task.pending_task_managments/create_by_task.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#fd8d9e')}
+                            <Text>Overdue: {(create_by_task.due_task_managments/create_by_task.totalCount)*100}%</Text>
+                        </View>
+                    </View>
+
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Task Created By Employee :</Text>
+                            <Text  style={styles.fielddata}>{asigned_by_task.totalCount}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Completed :</Text>
+                            <Text  style={[styles.fielddata]}>{asigned_by_task.completed_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Pending :</Text>
+                            <Text  style={[styles.fielddata]}>{asigned_by_task.pending_task_managments}</Text>
+                        </View>
+                        <View  style={styles.field}>
+                            <Text style={styles.fieldname}>Overdue :</Text>
+                            <Text  style={[styles.fielddata]}>{asigned_by_task.due_task_managments}</Text>
+                        </View>
+                        
+                    <PieChart showText textColor="#3e3812" focusOnPress radius={100} textSize={13} data={[
+                        { value: (asigned_by_task.completed_task_managments/asigned_by_task.totalCount)*100, color: "#c0ff8c", text: `${(asigned_by_task.completed_task_managments/asigned_by_task.totalCount)*100}%` },
+                        { value: (asigned_by_task.pending_task_managments/asigned_by_task.totalCount)*100, color: "#8beafe", text: `${(asigned_by_task.pending_task_managments/asigned_by_task.totalCount)*100}%` },
+                        { value: (asigned_by_task.due_task_managments/asigned_by_task.totalCount)*100, color: "#fd8d9e", text: `${(asigned_by_task.due_task_managments/asigned_by_task.totalCount)*100}%` },
+                        ]} 
+                    />
+
+                    <View
+                        style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                        }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                width: 120,
+                                marginRight: 20,
+                            }}>
+                            {renderDot('#c0ff8c')}
+                            <Text>Compeleted: {(asigned_by_task.completed_task_managments/asigned_by_task.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#8beafe')}
+                            <Text>Pending: {(asigned_by_task.pending_task_managments/asigned_by_task.totalCount)*100}%</Text>
+                        </View>
+                        <View
+                            style={{flexDirection: 'row', alignItems: 'center', width: 120}}>
+                            {renderDot('#fd8d9e')}
+                            <Text>Overdue: {(asigned_by_task.due_task_managments/asigned_by_task.totalCount)*100}%</Text>
+                        </View>
+                    </View>
+                
+
+
+                
+
+                
+                </View>
+
+            ) :( 
+                <Text>Loading...</Text>
+            )}
+                
+
+            </ScrollView>
+            
+        </View>
+    );
+}
+
+const styles=StyleSheet.create({
+
+    container:{
+        flex:1,
+        backgroundColor:'white',
+    },
+    field:{
+        flexDirection:'row',
+        
+        
+    },
+    empname:{
+        fontSize:20,
+        marginBottom:10,
+    },
+    empvalue:{
+        fontSize:20,
+        marginLeft:5,
+    },
+    fieldname:{
+        fontSize:15,
+    },
+    fielddata:{
+        marginLeft:5,
+        marginBottom:5,
+        fontWeight:'700',
+        fontSize:15,
+    },
+    content:{
+        marginHorizontal:10,
+        marginVertical:10,
+    },
+})

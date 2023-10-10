@@ -29,6 +29,7 @@ import JobDetails from "./src/components/JobScreen/JobDetails";
 import ReAssign from "./src/components/JobScreen/Reassign";
 import CancelService from "./src/components/JobScreen/CancelService";
 import EditService from "./src/components/JobScreen/EditService";
+import TaskStatistics from "./src/components/screens/TaskStatistics";
 
 
 const Stack = createNativeStackNavigator();
@@ -142,6 +143,7 @@ const App = () => {
           <Stack.Screen name="Scanner" component={Scanner} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Scanner" }} />
           <Stack.Screen name="SerialScanner" component={SerialScanner} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "SerialScanner" }} />
           <Stack.Screen name="Sign" component={Sign} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Scanner" }} />
+          <Stack.Screen name="TaskStat" component={TaskStatistics} options={{ headerShown: false, }}/>
           <Stack.Screen name="TaskManager" component={TaskManager} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Task Manager" }} />
           <Stack.Screen name="AddTask" component={AddTask} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Add Task" }} />
           <Stack.Screen name="BarCode" component={BarCode} options={{ headerStyle: { backgroundColor: '#ffa600' }, headerShown: false, title: "Bar Code" }} />
