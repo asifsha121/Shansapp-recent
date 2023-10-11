@@ -1353,3 +1353,6 @@ export default AddTask
 decrease text font size  in task update
 default time screen in digital mode 
 playback button 
+
+
+format due date and time 

@@ -12,7 +12,7 @@
 
 
 
-// export const baseUrl = "https://shansapp.danatfix.com:3020"
+export const baseUrl = "https://shansapp.danatfix.com:3020"
 
-export const baseUrl = "https://shansapp.danatfix.com:3004"
+// export const baseUrl = "https://shansapp.danatfix.com:3004"
 

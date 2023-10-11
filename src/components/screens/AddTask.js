@@ -63,12 +63,60 @@ const AddTask = () => {
   //validation
   const [errors, setErrors] = useState({})
 
+  const formatTime = (date) => {
+    if (date) {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const formattedHours = hours < 10 ? `0${hours}` : `${hours}`;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+      return `${formattedHours}:${formattedMinutes}`;
+    }
+    return ''; // Return an empty string if date is null
+  };
+
+
+  // Usage
+  const selectedTimeString = formatTime(selectedTime);
+
+  const combineDateAndTime = (date, time) => {
+    const defaultTime = '22:00';
+
+    if (date) {
+      const combinedDateTime = new Date(date);
+
+      if (time) {
+        const timeParts = selectedTimeString.split(':'); // Use the formatted time string
+        combinedDateTime.setHours(parseInt(timeParts[0]));
+        combinedDateTime.setMinutes(parseInt(timeParts[1]));
+      } else {
+        const defaultTimeParts = defaultTime.split(':');
+        combinedDateTime.setHours(parseInt(defaultTimeParts[0]));
+        combinedDateTime.setMinutes(parseInt(defaultTimeParts[1]));
+      }
+
+      combinedDateTime.setSeconds(0);
+      return combinedDateTime;
+    }
+
+    return null;
+  };
+
+
+  const combinedDateTime = combineDateAndTime(selectedDate, selectedTime);
 
   // text to speech
   const speak = () => {
-    const textToSay = taskDetails
-    Speech.speak(textToSay)
-  }
+    const textToSay = taskDetails;
+    const options = {
+      rate: 0.95, // Adjust the rate for medium speed
+    };
+
+    try {
+      Speech.speak(textToSay, options);
+    } catch (error) {
+      console.error("Text-to-speech error:", error);
+    }
+  };
 
 
   const validateForm = () => {
@@ -92,9 +140,9 @@ const AddTask = () => {
     if (!selectedDate) {
       newErrors.selectedDate = 'Select Date';
     }
-    if (!selectedTime) {
-      newErrors.selectedTime = 'Time field is required';
-    }
+    // if (!selectedTime) {
+    //   newErrors.selectedTime = 'Time field is required';
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -202,8 +250,8 @@ const AddTask = () => {
         "title": formData.taskTitle,
         "description": taskDetails,
         "status": "New",
-        "due_date": selectedDate,
-        "estimated_time": selectedTime || "10 PM",
+        "due_date": combinedDateTime,
+        "estimated_time": combinedDateTime,
         "priority": formData?.priority?.value || null,
         "assignee_id": formData?.assignee?.id || null,
         "created_by_id": adminData?.related_profile?._id,
@@ -330,10 +378,15 @@ const AddTask = () => {
           </TouchableOpacity> : ""}
           <Text style={styles.label}>Due Date & Time:</Text>
           <View style={[styles.input, errors.selectedDate && styles.errorInput, errors.selectedTime && styles.errorInput, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            {/* <Text>
+              {selectedDate ? selectedDate.toDateString() + (selectedTime ? "" : " - 10 PM") : 'Select a date & time'}
+              {selectedTime ? ` - ${selectedTime.toLocaleTimeString()}` : ''}{' '}
+            </Text> */}
             <Text>
               {selectedDate ? selectedDate.toDateString() + (selectedTime ? "" : " - 10 PM") : 'Select a date & time'}
               {selectedTime ? ` - ${selectedTime.toLocaleTimeString()}` : ''}{' '}
             </Text>
+
             <View style={{ flexDirection: 'row', alignSelf: "flex-end" }}>
               <TouchableOpacity onPress={() => setOpenDate(true)}>
                 <Image source={require("../../../assets/addTask/calendar.png")} style={{ width: 25, height: 25 }} />

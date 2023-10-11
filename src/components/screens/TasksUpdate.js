@@ -166,6 +166,48 @@ const TasksUpdate = ({ navigation, route }) => {
 
 
 
+    // Foramating time  and date 
+    const formatTime = (date) => {
+        if (date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const formattedHours = hours < 10 ? `0${hours}` : `${hours}`;
+            const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+            return `${formattedHours}:${formattedMinutes}`;
+        }
+        return ''; // Return an empty string if date is null
+    };
+
+
+    // Usage
+    const selectedTimeString = formatTime(selectedDueTime);
+
+    const combineDateAndTime = (date, time) => {
+        const defaultTime = '22:00';
+
+        if (date) {
+            const combinedDateTime = new Date(date);
+
+            if (time) {
+                const timeParts = selectedTimeString.split(':'); // Use the formatted time string
+                combinedDateTime.setHours(parseInt(timeParts[0]));
+                combinedDateTime.setMinutes(parseInt(timeParts[1]));
+            } else {
+                const defaultTimeParts = defaultTime.split(':');
+                combinedDateTime.setHours(parseInt(defaultTimeParts[0]));
+                combinedDateTime.setMinutes(parseInt(defaultTimeParts[1]));
+            }
+
+            combinedDateTime.setSeconds(0);
+            return combinedDateTime;
+        }
+
+        return null;
+    };
+
+
+    const combinedDateTime = combineDateAndTime(selectedDueDate, selectedDueTime);
+
     const fetchAddUpdatesData = async () => {
         try {
             const response = await axios.get(detailTaskurl);
@@ -329,7 +371,7 @@ const TasksUpdate = ({ navigation, route }) => {
             task?.estimated_time === '10 PM'
                 ? task?.estimated_time
                 : format(dueTime, 'hh:mm a');
-        
+
 
 
         // Format the date as yyyy-MM-dd HH:mm
@@ -385,8 +427,8 @@ const TasksUpdate = ({ navigation, route }) => {
                 "task_managment_id": id,
                 "title": taskTitle,
                 "description": description,
-                "due_date": selectedDueDate,
-                "estimated_time": selectedDueTime,
+                "due_date": combinedDateTime,
+                "estimated_time": combinedDateTime,
                 "status": status,
                 "priority": priority,
                 "assignee_id": formData?.assignee?.id || null,
