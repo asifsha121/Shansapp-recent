@@ -7,7 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from "react-native";
 import { baseUrl } from "../../api/const";
 import axios from "axios";
+import { Dropdown } from 'react-native-element-dropdown';
 
+
+const employeeUrl = `${baseUrl}/viewEmployees/employee_list/employee_dropdown`;
 
 export default function TaskStatistics() {
     const navigation = useNavigation();
@@ -35,6 +38,8 @@ export default function TaskStatistics() {
     const [create_by_task, set_create_by_task] = useState([]);
     const [asigned_by_task, set_asigned_by_task] = useState([]);
     const [total_task_data, set_total_task_data] = useState([]);
+    const [formData, setFormData] = useState({})
+    const [employee, setEmployee] = useState([])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,6 +61,17 @@ export default function TaskStatistics() {
     }, []);
 
 
+    //fetching employee details
+    useEffect(() => {
+        axios.get(employeeUrl).then((res) => {
+
+            const employeeArray = res.data.data.map((item) => ({
+                id: item._id,
+                name: item.name
+            }))
+            setEmployee(employeeArray)
+        })
+    }, [])
 
 
 
@@ -99,17 +115,17 @@ export default function TaskStatistics() {
         {
             value: (create_by_task.completed_task_managments / create_by_task.totalCount) * 100,
             color: "#c0ff8c",
-            text: `${(create_by_task.completed_task_managments / create_by_task.totalCount) * 100}%`,
+            text: `${((create_by_task.completed_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%`, // Format to 2 decimal places
         },
         {
             value: (create_by_task.pending_task_managments / create_by_task.totalCount) * 100,
             color: "#8beafe",
-            text: `${(create_by_task.pending_task_managments / create_by_task.totalCount) * 100}%`,
+            text: `${((create_by_task.pending_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%`, // Format to 2 decimal places
         },
         {
             value: (create_by_task.due_task_managments / create_by_task.totalCount) * 100,
             color: "#fd8d9e",
-            text: `${(create_by_task.due_task_managments / create_by_task.totalCount) * 100}%`,
+            text: `${((create_by_task.due_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%`, // Format to 2 decimal places
         },
     ];
 
@@ -121,19 +137,20 @@ export default function TaskStatistics() {
         {
             value: (asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100,
             color: "#c0ff8c",
-            text: `${(asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100}%`,
+            text: `${((asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%`,
         },
         {
             value: (asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100,
             color: "#8beafe",
-            text: `${(asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100}%`,
+            text: `${((asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%`,
         },
         {
             value: (asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100,
             color: "#fd8d9e",
-            text: `${(asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100}%`,
+            text: `${((asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%`,
         },
     ];
+
 
     //filter to  only take values greater than zero for piechart 
     const filtered_asigned_by_task_data = asigned_by_task_data.filter(item => item.value > 0);
@@ -144,19 +161,20 @@ export default function TaskStatistics() {
         {
             value: (total_task_data.completed_task_managments / total_task_data.totalCount) * 100,
             color: "#c0ff8c",
-            text: `${(total_task_data.completed_task_managments / total_task_data.totalCount) * 100}%`,
+            text: `${((total_task_data.completed_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%`,
         },
         {
             value: (total_task_data.pending_task_managments / total_task_data.totalCount) * 100,
             color: "#8beafe",
-            text: `${(total_task_data.pending_task_managments / total_task_data.totalCount) * 100}%`,
+            text: `${((total_task_data.pending_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%`,
         },
         {
             value: (total_task_data.due_task_managments / total_task_data.totalCount) * 100,
             color: "#fd8d9e",
-            text: `${(total_task_data.due_task_managments / total_task_data.totalCount) * 100}%`,
+            text: `${((total_task_data.due_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%`,
         },
     ];
+
 
     //filter to  only take values greater than zero for piechart 
     const filtered_total_task_data_data = total_task_data_data.filter(item => item.value > 0);
@@ -170,7 +188,25 @@ export default function TaskStatistics() {
                     <View style={styles.content}>
                         <View style={styles.field}>
                             <Text style={styles.empname}>Employee Name:</Text>
-                            <Text style={styles.empvalue}>{userName}</Text>
+                            {/* <Text style={styles.empvalue}>{userName}</Text> */}
+                            <View style={{ width: "60%", marginLeft: 10 }}>
+
+                                <Dropdown
+                                    style={[styles.dropdown, { borderColor: 'black', marginBottom: 10 }]}
+                                    data={employee}
+                                    search
+                                    maxHeight={300}
+                                    labelField="name"
+                                    valueField="id"
+                                    placeholder={userName}
+                                    searchPlaceholder="Search Customers"
+                                    onChange={(item) => {
+                                        const { name, id } = item; // Destructure the selected item
+                                        setFormData({ ...formData, assignee: { name, id } }); // Store the name and id in the assignee property
+                                    }}
+                                />
+                            </View>
+
                         </View>
 
                         <View style={styles.field}>
@@ -212,19 +248,20 @@ export default function TaskStatistics() {
                                     marginRight: 20,
                                 }}>
                                 {renderDot('#c0ff8c')}
-                                <Text>Compeleted: {(total_task_data.completed_task_managments / total_task_data.totalCount) * 100}%</Text>
+                                <Text>Completed: {((total_task_data.completed_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#8beafe')}
-                                <Text>Pending: {(total_task_data.pending_task_managments / total_task_data.totalCount) * 100}%</Text>
+                                <Text>Pending: {((total_task_data.pending_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#fd8d9e')}
-                                <Text>Overdue: {(total_task_data.due_task_managments / total_task_data.totalCount) * 100}%</Text>
+                                <Text>Overdue: {((total_task_data.due_task_managments / total_task_data.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                         </View>
+
 
                         <View style={styles.field}>
                             <Text style={styles.fieldname}>Task Created By Employee :</Text>
@@ -262,19 +299,20 @@ export default function TaskStatistics() {
                                     marginRight: 20,
                                 }}>
                                 {renderDot('#c0ff8c')}
-                                <Text>Compeleted: {(create_by_task.completed_task_managments / create_by_task.totalCount) * 100}%</Text>
+                                <Text>Completed: {((create_by_task.completed_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#8beafe')}
-                                <Text>Pending: {(create_by_task.pending_task_managments / create_by_task.totalCount) * 100}%</Text>
+                                <Text>Pending: {((create_by_task.pending_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#fd8d9e')}
-                                <Text>Overdue: {(create_by_task.due_task_managments / create_by_task.totalCount) * 100}%</Text>
+                                <Text>Overdue: {((create_by_task.due_task_managments / create_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                         </View>
+
 
                         <View style={styles.field}>
                             <Text style={styles.fieldname}>Task Assigned to Employee :</Text>
@@ -315,19 +353,20 @@ export default function TaskStatistics() {
                                     marginRight: 20,
                                 }}>
                                 {renderDot('#c0ff8c')}
-                                <Text>Compeleted: {(asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100}%</Text>
+                                <Text>Completed: {((asigned_by_task.completed_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#8beafe')}
-                                <Text>Pending: {(asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100}%</Text>
+                                <Text>Pending: {((asigned_by_task.pending_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                             <View
                                 style={{ flexDirection: 'row', alignItems: 'center', width: 120 }}>
                                 {renderDot('#fd8d9e')}
-                                <Text>Overdue: {(asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100}%</Text>
+                                <Text>Overdue: {((asigned_by_task.due_task_managments / asigned_by_task.totalCount) * 100).toFixed(2)}%</Text>
                             </View>
                         </View>
+
 
 
                     </View>
@@ -384,5 +423,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 120,
         marginVertical: 5,
+    },
+    dropdown: {
+        borderRadius: 5,
+        borderWidth: 0.9,
+        paddingHorizontal: 10,
+        borderRightWidth: 2.5,
+        // borderRightColor: "#ffa600",
     },
 })

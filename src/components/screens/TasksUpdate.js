@@ -465,7 +465,6 @@ const TasksUpdate = ({ navigation, route }) => {
             console.log("API Response: ", response.data)
         } catch (error) {
             console.log(error)
-
         }
     }
 
